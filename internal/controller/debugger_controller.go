@@ -121,7 +121,7 @@ func (r *DebuggerReconciler) ensureDebugPod(ctx context.Context, debugger *debug
 	debugCommand := []string{
 		"/bin/bash",
 		"-c",
-		fmt.Sprintf("echo ${TARGET_CON} && oc debug ${TARGET_CON} -- bash -c \"mounter --mountPath %s --hostPath /host --unmount\" && oc debug node/${NODE_NAME} -- /bin/bash -c \"chroot /host sh -c 'cp -r /home/core/pvc-* /var/hpvolumes/csi/'\"",mountPath),
+		fmt.Sprintf("echo ${TARGET_CON} && oc debug node/${NODE_NAME} -- /bin/bash -c \"chroot /host sh -c 'cp -r /var/hpvolumes/csi/* /home/core/'\"  && oc debug ${TARGET_CON} -- bash -c \"mounter --mountPath %s --hostPath /host --unmount\" &&sleep 60s && oc debug node/${NODE_NAME} -- /bin/bash -c \"chroot /host sh -c 'cp -r /home/core/pvc-* /var/hpvolumes/csi/'\"",mountPath),
 	}
 	debugImage := debugger.Spec.DebugImage
 	if debugImage == "" {
