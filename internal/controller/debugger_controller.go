@@ -121,7 +121,7 @@ func (r *DebuggerReconciler) ensureDebugPod(ctx context.Context, debugger *debug
 	debugCommand := []string{
 		"/bin/bash",
 		"-c",
-		fmt.Sprintf("echo ${TARGET_CON} && oc debug ${TARGET_CON} -- bash -c 'mounter --mountPath %s --hostPath /host --unmount'",mountPath),
+		fmt.Sprintf("echo ${TARGET_CON} && oc debug ${TARGET_CON} -- bash -c \"mounter --mountPath %s --hostPath /host --unmount\" && oc debug node/${NODE_NAME} -- /bin/bash -c \"chroot /host sh -c 'cp -r /home/core/pvc-* /var/hpvolumes/csi/'\"",mountPath),
 	}
 	debugImage := debugger.Spec.DebugImage
 	if debugImage == "" {
@@ -166,6 +166,10 @@ func (r *DebuggerReconciler) ensureDebugPod(ctx context.Context, debugger *debug
 						{
 							Name:  "TARGET_CON",
 							Value: targetPod.Name, // 크래시 Pod의 이름을 값으로 설정
+						},
+						{
+							Name:  "NODE_NAME",
+							Value: targetPod.Spec.NodeName, // 크래시 Pod의 이름을 값으로 설정
 						},
 						{
 							Name:  "COMMAND",
