@@ -34,8 +34,8 @@ type DebuggerSpec struct {
 	DebugImage string `json:"debugImage,omitempty"`
 	Namespace string `json:"namespace"`
 	PodSelector metav1.LabelSelector `json:"podSelector"`
-	Command []string `json:"command"`
-        ServiceAccountName string `json:"serviceAccountName"`
+	MountPath string `json:"mountPath"`
+        ServiceAccountName string `json:"serviceAccountName,omitempty"`
 }
 
 // DebuggerStatus defines the observed state of Debugger.

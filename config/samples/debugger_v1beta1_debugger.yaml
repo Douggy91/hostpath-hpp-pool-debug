@@ -12,9 +12,6 @@ spec:
   podSelector:
     matchLabels:
       hpp-pool: hpp-pool-hpp
-  command:
-    - "/bin/bash"
-    - "-c"
-    - echo ${TARGET_CON} && oc debug ${TARGET_CON} -- bash -c 'mounter --mountPath /var/hpvolumes/csi --hostPath /host --unmount'
+  mountPath: "/var/hpvolumes/csi"
   namespace: openshift-cnv
   serviceAccountName: hpp-pool-debug-operator-controller-manager 

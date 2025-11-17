@@ -39,11 +39,9 @@ spec:
           spec:
             description: DebuggerSpec defines the desired state of Debugger.
             properties:
-              command:
-                items:
-                  type: string
-                type: array
               debugImage:
+                type: string
+              mountPath:
                 type: string
               namespace:
                 type: string
@@ -104,10 +102,9 @@ spec:
                 format: int32
                 type: integer
             required:
-            - command
+            - mountPath
             - namespace
             - podSelector
-            - serviceAccountName
             - size
             type: object
           status:

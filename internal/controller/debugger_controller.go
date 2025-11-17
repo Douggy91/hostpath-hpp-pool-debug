@@ -114,6 +114,15 @@ func (r *DebuggerReconciler) ensureDebugPod(ctx context.Context, debugger *debug
 	}
 
 	// 3. Debug Pod 객체 정의
+	mountPath := debugger.Spec.MountPath
+	if mountPath == "" {
+                mountPath = "/var/hpvolumes/csi"
+        }
+	debugCommand := []string{
+		"/bin/bash",
+		"-c",
+		fmt.Sprintf("echo ${TARGET_CON} && oc debug ${TARGET_CON} -- bash -c 'mounter --mountPath %s --hostPath /host --unmount'",mountPath),
+	}
 	debugImage := debugger.Spec.DebugImage
 	if debugImage == "" {
 		debugImage = "busybox"
@@ -152,11 +161,15 @@ func (r *DebuggerReconciler) ensureDebugPod(ctx context.Context, debugger *debug
 					Image: debugImage,
 					VolumeMounts: targetContainer.VolumeMounts,
 					SecurityContext: targetContainer.SecurityContext,
-					Command: debugger.Spec.Command, // 사용자 지정 커맨드 실행
+					Command: debugCommand,
 					Env: []corev1.EnvVar{ // ⭐️ 핵심: 환경 변수 주입
 						{
 							Name:  "TARGET_CON",
 							Value: targetPod.Name, // 크래시 Pod의 이름을 값으로 설정
+						},
+						{
+							Name:  "COMMAND",
+							Value: fmt.Sprintf("echo ${TARGET_CON} && oc debug ${TARGET_CON} -- bash -c 'mounter --mountPath %s --hostPath /host --unmount'",mountPath), // 크래시 Pod의 이름을 값으로 설정
 						},
 					},
 				},
