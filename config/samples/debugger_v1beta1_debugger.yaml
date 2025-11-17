@@ -1,0 +1,20 @@
+apiVersion: debugger.test.local/v1beta1
+kind: Debugger
+metadata:
+  labels:
+    app.kubernetes.io/name: hpp-pool-debug-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: debugger-sample
+  namespace: openshift-cnv
+spec:
+  size: 1
+  debugImage: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4c5196f7d4bda8b687e9ea4f9e172ad8bae2d4b71352bf67974822ed43f7d121  
+  podSelector:
+    matchLabels:
+      hpp-pool: hpp-pool-hpp
+  command:
+    - "/bin/bash"
+    - "-c"
+    - echo ${TARGET_CON} && oc debug ${TARGET_CON} -- bash -c 'mounter --mountPath /var/hpvolumes/csi --hostPath /host --unmount'
+  namespace: openshift-cnv
+  serviceAccountName: hpp-pool-debug-operator-controller-manager 
